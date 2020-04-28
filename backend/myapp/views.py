@@ -34,22 +34,25 @@ def update_country(request):
         obj.save()
     country_data = Country.objects.values()
     total_confirmed = sum([data['confirmed'] for data in country_data])
-    increase_confirmed = total_confirmed - getJsonDataByKey("data.json", "confirmed")
     # if increase_confirmed > 0:
     #     setJsonData("data.json", "confirmed", total_confirmed)
 
     total_active = sum([data['active'] for data in country_data])
 
     total_recovered = sum([data['recovered'] for data in country_data])
-    increase_recovered = total_recovered - getJsonDataByKey("data.json", "recovered")
 
     total_death = sum([data['deceased'] for data in country_data])
-    increase_death = total_death - getJsonDataByKey("data.json", "death")
-    # if getJsonDataByKey("data.json", "date") < datetime.datetime.now().date():
-    #     setJsonData("data.json", "confirmed", total_confirmed)
-    #     setJsonData("data.json", "recovered", total_recovered)
-    #     setJsonData("data.json", "death", total_death)
-    #     setJsonData("data.json", "death", total_death)
+    today_date = datetime.datetime.now().date().strftime("%d-%m-%Y")
+    if getJsonDataByKey("data.json", "date") != today_date:
+        setJsonData("data.json", "confirmed", total_confirmed)
+        setJsonData("data.json", "recovered", total_recovered)
+        setJsonData("data.json", "death", total_death)
+        setJsonData("data.json", "date", today_date)
+    else:
+        increase_confirmed = total_confirmed - getJsonDataByKey("data.json", "confirmed")
+        increase_recovered = total_recovered - getJsonDataByKey("data.json", "recovered")
+        increase_death = total_death - getJsonDataByKey("data.json", "death")
+
     sort_by_active = sorted(country_data, key=lambda data:data['active'], reverse=True)
     top_10_country = list()
     for data in sort_by_active:
